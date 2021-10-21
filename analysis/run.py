@@ -3,8 +3,11 @@ import subprocess
 
 
 def main():
-    for max_features_item in range(160000, 220000, 20000):
-        os.system('python explore.py --max-features {}'.format(max_features_item))
+    for max_features_item in range(60000, 100000, 20000):
+        os.system('python explore.py '
+                  '--max-features {} '
+                  '--ngram-range-max 3 '
+                  '--sublinear-tf False'.format(max_features_item))
 
         # process = subprocess.Popen(['python', 'explore.py', '--max-features', str(max_features_item)],
         #                            stdout=subprocess.PIPE,
