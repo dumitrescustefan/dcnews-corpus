@@ -4,10 +4,12 @@ import subprocess
 
 def main():
     for max_features_item in range(60000, 100000, 20000):
-        os.system('python explore.py '
-                  '--max-features {} '
-                  '--ngram-range-max 3 '
-                  '--sublinear-tf False'.format(max_features_item))
+        for ngram_range_max in range(1, 5):
+            for slinear_tf in [False, True]:
+                os.system('python explore.py '
+                          '--max-features {} '
+                          '--ngram-range-max {} '
+                          '--sublinear-tf {}'.format(max_features_item, ngram_range_max, slinear_tf))
 
         # process = subprocess.Popen(['python', 'explore.py', '--max-features', str(max_features_item)],
         #                            stdout=subprocess.PIPE,

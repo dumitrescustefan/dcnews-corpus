@@ -6,20 +6,27 @@ from sklearn.decomposition import TruncatedSVD
 from nltk.tokenize import word_tokenize
 from sklearn.metrics.pairwise import cosine_similarity, cosine_distances
 
+
 # TFIDF + SVD + Cosine
 # code inspired from: https://stackoverflow.com/questions/41743402/svd-on-tfidf-matrix-returns-an-odd-shape
 
 
 def fit_tfidf_model(corpus, max_features=50000, ngram_range_max=3, sublinear_tf=False):
     """ TF-IDF train """
-    print('Started fitting model for max_features {}'.format(max_features))
+    print('Started fitting model for max_features: "{}", '
+          'ngram_range_max: "{}", sublinear_tf: "{}"'.format(max_features,
+                                                             ngram_range_max,
+                                                             sublinear_tf))
     transformer = TfidfVectorizer(input=corpus,
                                   analyzer='word',
                                   max_features=max_features,
                                   ngram_range=(1, ngram_range_max),
                                   sublinear_tf=sublinear_tf)
     ret = transformer.fit(corpus)
-    print('Done fitting the model for {} max_features'.format(max_features))
+    print('Done fitting model for max_features: "{}", '
+          'ngram_range_max: "{}", sublinear_tf: "{}"'.format(max_features,
+                                                             ngram_range_max,
+                                                             sublinear_tf))
     return ret
 
 
@@ -55,7 +62,17 @@ def main(max_features=60000, ngram_range_max=3, sublinear_tf=False):
     print('Done creating reduced vectors')
 
     # 5. compute similarity score
-    compute_similarity_score(all_data_df, max_features, reduced_vectors_texts, reduced_vectors_titles)
+    print('Started computing similarity score for max_features: "{}", '
+          'ngram_range_max: "{}", sublinear_tf: "{}"'.format(max_features,
+                                                             ngram_range_max,
+                                                             sublinear_tf))
+    all_data_df_sim_score = compute_similarity_score(all_data_df, reduced_vectors_texts, reduced_vectors_titles)
+    pickle_path = "./dcnews_max_features_{}_ngram_range_max_{}_sublinear_tf_{}.pkl".format(max_features)
+    all_data_df_sim_score.to_pickle(pickle_path)
+    print('Done computing similarity score for max_features: "{}", '
+          'ngram_range_max: "{}", sublinear_tf: "{}"'.format(max_features,
+                                                             ngram_range_max,
+                                                             sublinear_tf))
 
 
 def preprocess_data(all_data_df):
@@ -105,17 +122,16 @@ def load_data():
     return all_data_df
 
 
-def compute_similarity_score(all_data_df, max_features, reduced_vectors_texts, reduced_vectors_titles):
+def compute_similarity_score(all_data_df, reduced_vectors_texts, reduced_vectors_titles):
     """ Compute similarity score based on cosine similarity """
-    print('Started computing similarity score for {} max_features'.format(max_features))
     all_data_df['sim_score'] = 0.0
     for cnt, (idx, row) in enumerate(all_data_df.iterrows()):
+        # cosine similarity
         sim_score = cosine_similarity([reduced_vectors_titles[cnt]], [reduced_vectors_texts[cnt]])
         all_data_df.at[idx, 'sim_score'] = sim_score
         if (cnt % 5000) == 0:
             print('Processed {} title/text pairs'.format(cnt))
-    all_data_df.to_pickle("./all_data_sim_score_max_features_{}.pkl".format(max_features))
-    print('Done computing similarity score for {} max_features'.format(max_features))
+    return all_data_df
 
 
 def read_cmd_args():
@@ -131,4 +147,4 @@ def read_cmd_args():
 
 
 args = read_cmd_args()
-main(args.max_features)
+main(args.max_features, args.ngram_range_max, args.sublinear_tf)
