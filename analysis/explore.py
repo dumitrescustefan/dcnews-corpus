@@ -67,7 +67,7 @@ def main(max_features=60000, ngram_range_max=3, sublinear_tf=False):
                                                              ngram_range_max,
                                                              sublinear_tf))
     all_data_df_sim_score = compute_similarity_score(all_data_df, reduced_vectors_texts, reduced_vectors_titles)
-    pickle_path = "./dcnews_max_features_{}_ngram_range_max_{}_sublinear_tf_{}.pkl".format(max_features)
+    pickle_path = "./dcnews_max_features_{}_ngram_range_max_{}_sublinear_tf_{}.pkl".format(max_features, ngram_range_max, sublinear_tf)
     all_data_df_sim_score.to_pickle(pickle_path)
     print('Done computing similarity score for max_features: "{}", '
           'ngram_range_max: "{}", sublinear_tf: "{}"'.format(max_features,

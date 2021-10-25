@@ -3,9 +3,9 @@ import subprocess
 
 
 def main():
-    for max_features_item in range(60000, 100000, 20000):
+    for max_features_item in range(60000, 220000, 20000):
         for ngram_range_max in range(1, 5):
-            for slinear_tf in [False, True]:
+            for slinear_tf in [False]:
                 os.system('python explore.py '
                           '--max-features {} '
                           '--ngram-range-max {} '
